@@ -5,44 +5,63 @@ use std::io::{self, BufRead, BufReader};
 // Import the tests module (only included in test builds)
 mod tests;
 
-/// Main entry point for the arithmetic mean calculator.
+#[derive(Debug, PartialEq)]
+pub enum Operation {
+    Mean,
+    Sum,
+}
+
+/// Main entry point for the arithmetic calculator.
 /// 
-/// Expects a file path as the first command-line argument.
-/// Reads the file and calculates the mean of all valid numeric values.
+/// Expects an operation (mean/sum) and a file path as command-line arguments.
+/// Reads the file and calculates either the mean or sum of all valid numeric values.
 fn main() {
     // Collect command-line arguments into a vector
     let args: Vec<String> = env::args().collect();
     
-    // Check if a file path was provided (args[0] is the program name)
-    if args.len() < 2 {
-        println!("Please provide a file path as a parameter");
+    // Check if both operation and file path were provided
+    if args.len() < 3 {
+        println!("Usage: {} <operation> <file_path>", args[0]);
+        println!("Operations: mean, sum");
         return;
     }
     
-    // Extract the file path from the arguments
-    let file_path = &args[1];
+    // Parse the operation argument
+    let operation = match args[1].to_lowercase().as_str() {
+        "mean" => Operation::Mean,
+        "sum" => Operation::Sum,
+        _ => {
+            println!("Invalid operation. Use 'mean' or 'sum'");
+            return;
+        }
+    };
     
-    // Calculate the mean and handle any errors
-    match calculate_mean_from_file(file_path) {
-        Ok(mean) => println!("{}", mean),
+    // Extract the file path from the arguments
+    let file_path = &args[2];
+    
+    // Calculate the result and handle any errors
+    match calculate_from_file(file_path, operation) {
+        Ok(result) => println!("{}", result),
         Err(e) => eprintln!("Error: {}", e),
     }
 }
 
-/// Calculates the arithmetic mean of numeric values in a file.
+/// Calculates either the arithmetic mean or sum of numeric values in a file.
 /// 
 /// # Arguments
 /// * `file_path` - Path to the file containing numeric values (one per line)
+/// * `operation` - The operation to perform (Mean or Sum)
 /// 
 /// # Returns
-/// * `Ok(f64)` - The arithmetic mean of all valid numbers
+/// * `Ok(f64)` - The calculated result (mean or sum)
 /// * `Err(io::Error)` - If the file cannot be opened or read
 /// 
 /// # Behavior
 /// - Ignores blank lines
 /// - Ignores lines that cannot be parsed as f64
-/// - Returns 0.0 if no valid numbers are found (avoids divide by zero)
-pub fn calculate_mean_from_file(file_path: &str) -> io::Result<f64> {
+/// - For mean: Returns 0.0 if no valid numbers are found (avoids divide by zero)
+/// - For sum: Returns 0.0 if no valid numbers are found
+pub fn calculate_from_file(file_path: &str, operation: Operation) -> io::Result<f64> {
     // Open the file and create a buffered reader for efficient line-by-line reading
     let file = File::open(file_path)?;
     let reader = BufReader::new(file);
@@ -72,12 +91,22 @@ pub fn calculate_mean_from_file(file_path: &str) -> io::Result<f64> {
         // Non-numeric lines are silently ignored
     }
     
-    // Handle the case where no valid numbers were found
-    // This prevents divide by zero errors
-    if count == 0 {
-        return Ok(0.0);
+    // Calculate result based on operation
+    match operation {
+        Operation::Mean => {
+            // Handle the case where no valid numbers were found
+            // This prevents divide by zero errors
+            if count == 0 {
+                Ok(0.0)
+            } else {
+                Ok(sum / count as f64)
+            }
+        }
+        Operation::Sum => Ok(sum),
     }
-    
-    // Calculate and return the arithmetic mean
-    Ok(sum / count as f64)
+}
+
+/// Legacy function for backward compatibility in tests
+pub fn calculate_mean_from_file(file_path: &str) -> io::Result<f64> {
+    calculate_from_file(file_path, Operation::Mean)
 }

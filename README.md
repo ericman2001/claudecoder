@@ -4,7 +4,7 @@ This repository serves as a sandbox and exploration tool for **Claude Code** ([c
 
 ## Project Purpose
 
-This is a Rust command-line application that calculates the arithmetic mean of numbers in a file. While the application itself is straightforward, it demonstrates various software engineering best practices and serves as a testbed for Claude Code's features.
+This is a Rust command-line application that calculates either the arithmetic mean or sum of numbers in a file. While the application itself is straightforward, it demonstrates various software engineering best practices and serves as a testbed for Claude Code's features.
 
 ## What This Repository Demonstrates
 
@@ -16,11 +16,11 @@ This is a Rust command-line application that calculates the arithmetic mean of n
 
 ## Application Features
 
-The arithmetic mean calculator:
-- Accepts a file path as a command-line argument
+The numeric calculator:
+- Accepts an operation type (mean or sum) and file path as command-line arguments
 - Reads numeric values from the file (one per line)
 - Ignores blank lines and non-numeric content
-- Calculates and displays the arithmetic mean
+- Calculates and displays either the arithmetic mean or sum
 - Handles edge cases (empty files, missing arguments) gracefully
 
 ## Usage
@@ -39,14 +39,19 @@ cargo build
 ### Running
 
 ```bash
-cargo run -- <path_to_file>
+cargo run -- <operation> <path_to_file>
 ```
 
-Example:
+Where `<operation>` is either `mean` or `sum`.
+
+Examples:
 ```bash
 echo -e "10\n20\n30" > numbers.txt
-cargo run -- numbers.txt
+cargo run -- mean numbers.txt
 # Output: 20
+
+cargo run -- sum numbers.txt
+# Output: 60
 ```
 
 ### Testing

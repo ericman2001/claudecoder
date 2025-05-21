@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Status
 
-This is a Rust command line application that computes the arithmetic mean of numbers in a file.
+This is a Rust command line application that computes either the arithmetic mean or sum of numbers in a file.
 
 ## Application Goal
 
-The application accepts a file path as a parameter and computes the arithmetic mean of the numbers in the file.
+The application accepts an operation type (mean or sum) and a file path as parameters, then computes the specified calculation on the numbers in the file.
 
 ## Project Structure
 
@@ -25,8 +25,9 @@ The application accepts a file path as a parameter and computes the arithmetic m
 
 2. Run the program:
    ```
-   cargo run -- <file_path>
+   cargo run -- <operation> <file_path>
    ```
+   Where `<operation>` is either `mean` or `sum`
 
 3. Run tests:
    ```
@@ -35,16 +36,18 @@ The application accepts a file path as a parameter and computes the arithmetic m
 
 ## Requirements Met
 
-1. ✓ Prints a message if no file path is provided
-2. ✓ Avoids divide by zero error when computing the mean
-3. ✓ Outputs the arithmetic mean of values in the file
-4. ✓ Assumes one number per line
-5. ✓ Ignores blank lines and non-numeric values without error
-6. ✓ Well-architected for unit tests
-7. ✓ Unit tests for all required scenarios:
-   - No file path supplied
-   - Blank file supplied
-   - Valid file with numeric values
+1. ✓ Prints usage message if insufficient parameters are provided
+2. ✓ Supports both arithmetic mean and sum operations
+3. ✓ Avoids divide by zero error when computing the mean
+4. ✓ Outputs the calculated result (mean or sum) of values in the file
+5. ✓ Assumes one number per line
+6. ✓ Ignores blank lines and non-numeric values without error
+7. ✓ Well-architected for unit tests
+8. ✓ Unit tests for all required scenarios:
+   - Insufficient arguments supplied
+   - Blank file supplied (both mean and sum)
+   - Valid file with numeric values (both mean and sum)
+   - Files with mixed content (both mean and sum)
 
 ## Dependencies
 
